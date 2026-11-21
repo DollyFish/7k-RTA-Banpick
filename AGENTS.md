@@ -5,7 +5,7 @@ Instructions for coding agents (Codex, etc.) working in this repository.
 ## What this project is
 
 A single-page ban/pick draft tool for **Seven Knights Rebirth RTA**, hosted as a static site (GitHub Pages).
-Everything lives in **one file: `index.html`** (HTML + CSS + JS, no build step, no framework, no backend).
+The project is organized into three static files: **`index.html`** (structure), **`style.css`** (styling), and **`main.js`** (draft logic & networking) (no build step, no framework, no backend).
 
 Three roles:
 
@@ -25,9 +25,9 @@ The user-facing UI text is **Thai**. Keep all new UI strings in Thai and match t
 3. **The spectator is authoritative.** Players only send intents (`preview`, `move`); the host validates everything and broadcasts the full state. Never let a player mutate state directly.
 4. **Timer pauses when either player is disconnected** (`networkReady` is false on the host → `deadline = null`).
 5. **Draft rules stay as defined** in `phases` / `turns` (8 phases, 14 turns, some turns pick 2 heroes). Don't change the order unless the user asks.
-6. Keep it a **single static file** that works on GitHub Pages. No bundlers, no npm runtime deps, no server code.
+6. Keep it as **clean static files** that work on GitHub Pages. No bundlers, no npm runtime deps, no server code.
 
-## Architecture overview (inside `index.html`)
+## Architecture overview (inside `main.js` and `style.css`)
 
 ### Draft core (original logic — keep behavior identical)
 - `phases` → expanded into `turns` (`{side, action, phase, count}`); `turnEnds` = valid history lengths.
@@ -35,7 +35,7 @@ The user-facing UI text is **Thai**. Keep all new UI strings in Thai and match t
 - `current()` = the turn at `moves.length`.
 - Timer: `turnDuration = 60000`. `setCountdown(ms)`, `timeLeft()`, `deadline`, `pausedTime`.
 - On timeout (`tick()`), the host (or local mode) locks the current selection and **randomly fills** missing slots, then `advanceTurn()`.
-- `advanceTurn(ids)` appends moves, bumps `revision`, shows the reveal popup (`revealDuration = 1200`), restarts the countdown.
+- `advanceTurn(ids)` appends moves, bumps `revision`, shows the reveal popup (`revealDuration = 2000`), restarts the countdown.
 - Rendering: `render()` → `renderPhases`, `panel(side)`, `updatePool`, `renderSelection`, `renderCountdown`; `showMatch()` opens the Match Up dialog when the draft finishes.
 - Validation helpers: `validSelection(ids, turn, complete)`, `validHistory(history)`.
 
